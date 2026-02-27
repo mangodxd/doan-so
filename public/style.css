@@ -124,9 +124,9 @@ header {
     & strong { background: #000; color: #50fa7b; padding: 2px 8px; margin-left: 5px; letter-spacing: 2px; }
 }
 
-.game-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; flex: 1; min-height: 0; }
+.game-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; flex: 1 }
 
-.timeline-panel, .chat-panel { display: flex; flex-direction: column; padding: 15px; min-height: 0; max-height: 65vh; }
+.timeline-panel, .chat-panel { display: flex; flex-direction: column; padding: 15px; min-height: 65vh; max-height: 65vh; }
 
 /* CSS Nesting Cho Feed */
 .history-feed { 
@@ -157,7 +157,6 @@ header {
 /* --- DIALOG MODALS --- */
 dialog {
     margin: auto; transform: rotate(1deg); 
-    /* Thuộc tính card mặc định đã bọc viền và bóng */
     &::backdrop { background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); }
 }
 
@@ -167,8 +166,8 @@ dialog {
     .my-secret-display { transform: rotate(0deg); width: 100%; }
     .card { padding: 20px 15px; }
     .chat-panel .history-feed { max-height: 150px; min-height: 150px; }
-    .timeline-panel .history-feed { min-height: 300px; max-height: 40vh; }
-    .timeline-panel, .chat-panel { max-height: none; }
+    .timeline-panel .history-feed { min-height: 400px; max-height: 400px; }
+    .timeline-panel, .chat-panel { max-height: 400px; }
     .action-box { padding: 10px; }
     @media (max-width: 400px) { #asking-ui, .chat-input-area { flex-direction: column; & button { width: 100%; } } }
 }
