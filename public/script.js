@@ -1,255 +1,175 @@
 const socket = io();
 
-// --- XỬ LÝ LINK PHÒNG ---
+// Auto-map toàn bộ DOM Elements có ID vào object `$` (Chuyển kebab-case -> camelCase)
+const $ = {};
+document.querySelectorAll('[id]').forEach(el => {
+    const camelId = el.id.replace(/-([a-z])/g, g => g[1].toUpperCase());
+    $[camelId] = el;
+});
+
+const STORED_NAME_KEY = 'guessNumber_playerName';
+let myId = null, currentRoomId = null, myName = "", roomDigits = 5, mySecretValue = "";
+
+// Utils
+const showToast = (msg, type = 'error') => {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerText = msg;
+    $.toastContainer.appendChild(toast);
+    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 4000);
+};
+
+const showView = (name) => {
+    document.querySelectorAll('.view').forEach(v => v.classList.toggle('hidden', v.dataset.name !== name));
+};
+
+const sendChat = () => {
+    const msg = $.chatInput.value.trim();
+    if (msg) { socket.emit('sendMessage', { roomId: currentRoomId, message: msg }); $.chatInput.value = ''; }
+};
+
 window.addEventListener('load', () => {
+    if (localStorage.getItem(STORED_NAME_KEY)) $.username.value = localStorage.getItem(STORED_NAME_KEY);
+    
     const urlParams = new URLSearchParams(window.location.search);
     const roomIdFromUrl = urlParams.get('room');
-
     if (roomIdFromUrl) {
-        let name = prompt("Nhập tên của bạn (để trống sẽ lấy tên ngẫu nhiên):");
-        if (name === null) return; // Nếu nhấn Cancel thì thôi
-        
-        if (name.trim() === "") {
-            name = "Player_" + Math.floor(Math.random() * 1000);
-        }
-        
-        myName = name;
+        myName = localStorage.getItem(STORED_NAME_KEY) || prompt("Nhập tên:")?.trim() || "Player_" + Math.floor(Math.random() * 1000);
+        if (!myName) return;
+        localStorage.setItem(STORED_NAME_KEY, myName);
         socket.emit('joinRoom', { roomId: roomIdFromUrl, username: myName });
     }
 });
-// ------------------------------------------
 
-// DOM Elements
-const views = {
-    lobby: document.getElementById('lobby-view'),
-    setup: document.getElementById('setup-view'),
-    game: document.getElementById('game-view')
+// EVENT DELEGATION: Chỉ cần 1 Listener cho toàn bộ nút bấm
+document.addEventListener('click', e => {
+    const id = e.target.id;
+    const isAnswerBtn = e.target.classList.contains('answer-btn');
+
+    if (id === 'create-btn') {
+        myName = $.username.value.trim() || "Player1";
+        localStorage.setItem(STORED_NAME_KEY, myName);
+        socket.emit('createRoom', { username: myName, digits: parseInt($.digitSelect.value) });
+    }
+    
+    if (id === 'join-btn') {
+        myName = $.username.value.trim() || "Player2";
+        localStorage.setItem(STORED_NAME_KEY, myName);
+        if ($.roomInput.value.trim()) socket.emit('joinRoom', { roomId: $.roomInput.value.trim(), username: myName });
+    }
+    
+    if (id === 'confirm-secret-btn') {
+        const secret = $.secretInput.value.trim();
+        if (secret.length !== roomDigits) return showToast(`Cần chính xác ${roomDigits} chữ số.`, 'error');
+        mySecretValue = secret;
+        socket.emit('submitSecret', { roomId: currentRoomId, secret });
+        $.secretForm.classList.add('hidden');
+        $.setupStatus.innerText = "Đang chờ đối thủ xác nhận...";
+    }
+    
+    if (id === 'ask-btn') {
+        const q = $.questionInput.value.trim();
+        if (q) { socket.emit('askQuestion', { roomId: currentRoomId, question: q }); $.questionInput.value = ''; }
+    }
+    
+    if (isAnswerBtn) socket.emit('answerQuestion', { roomId: currentRoomId, answer: e.target.dataset.val });
+    
+    if (id === 'guess-btn') $.guessModal.showModal(); // HTML5 Dialog API
+    if (id === 'cancel-guess-btn') $.guessModal.close();
+    
+    if (id === 'submit-guess-btn') {
+        const guess = $.finalGuessInput.value.trim();
+        if (guess.length !== roomDigits) return showToast(`Phải đủ ${roomDigits} chữ số!`, 'error');
+        socket.emit('makeGuess', { roomId: currentRoomId, guess });
+        $.guessModal.close();
+        $.finalGuessInput.value = '';
+    }
+    
+    if (id === 'surrender-btn' && confirm("Đầu hàng ngay lập tức?")) socket.emit('surrender', currentRoomId);
+    if (id === 'chat-send-btn') sendChat();
+    if (id === 'home-btn') window.location.href = window.location.pathname;
+});
+
+$.chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendChat(); });
+
+// Tự kích hoạt hàm global cho việc copy link từ innerHTML
+window.copyRoomLink = () => {
+    document.getElementById("copy-link").select();
+    document.execCommand("copy");
+    showToast("Đã copy link phòng!", "info");
 };
 
-// State
-let myId = null;
-let currentRoomId = null;
-let myName = "";
-let roomDigits = 5; // Lưu trữ số lượng chữ số của phòng hiện tại
-let mySecretValue = ""; // Lưu số bí mật để hiển thị lại
-
-// Lobby Actions
-document.getElementById('create-btn').addEventListener('click', () => {
-    myName = document.getElementById('username').value.trim() || "Player1";
-    const digits = document.getElementById('digit-select').value;
-    socket.emit('createRoom', { username: myName, digits: parseInt(digits) });
-});
-
-document.getElementById('join-btn').addEventListener('click', () => {
-    myName = document.getElementById('username').value.trim() || "Player2";
-    const roomId = document.getElementById('room-input').value.trim();
-    if(roomId) socket.emit('joinRoom', { roomId, username: myName });
-});
-
-// Setup Actions
-document.getElementById('confirm-secret-btn').addEventListener('click', () => {
-    const secret = document.getElementById('secret-input').value.trim();
-    
-    // Kiểm tra độ dài chính xác bằng n chữ số
-    if (secret === "" || secret.length !== roomDigits) {
-        return alert(`Vui lòng nhập chính xác ${roomDigits} chữ số.`);
-    }
-    
-    mySecretValue = secret; // <-- LƯU SỐ VÀO ĐÂY
-    socket.emit('submitSecret', { roomId: currentRoomId, secret });
-    document.getElementById('secret-form').classList.add('hidden');
-    document.getElementById('setup-status').innerText = "Đang chờ đối thủ xác nhận...";
-});
-
-// Game Actions
-document.getElementById('ask-btn').addEventListener('click', () => {
-    const q = document.getElementById('question-input').value.trim();
-    if(q) {
-        socket.emit('askQuestion', { roomId: currentRoomId, question: q });
-        document.getElementById('question-input').value = '';
-    }
-});
-
-document.querySelectorAll('.answer-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        socket.emit('answerQuestion', { roomId: currentRoomId, answer: e.target.dataset.val });
-    });
-});
-
-// Controls & Modals
-document.getElementById('guess-btn').addEventListener('click', () => {
-    document.getElementById('guess-modal').classList.remove('hidden');
-});
-document.getElementById('cancel-guess-btn').addEventListener('click', () => {
-    document.getElementById('guess-modal').classList.add('hidden');
-});
-document.getElementById('submit-guess-btn').addEventListener('click', () => {
-    const guess = document.getElementById('final-guess-input').value.trim();
-    
-    if (guess.length !== roomDigits) {
-        return alert(`Dự đoán phải có đúng ${roomDigits} chữ số!`);
-    }
-
-    socket.emit('makeGuess', { roomId: currentRoomId, guess });
-    document.getElementById('guess-modal').classList.add('hidden');
-});
-
-document.getElementById('surrender-btn').addEventListener('click', () => {
-    if(confirm("Bạn có chắc chắn muốn đầu hàng? Đối thủ của bạn sẽ thắng ngay lập tức.")) {
-        socket.emit('surrender', currentRoomId);
-    }
-});
-
-// Chat
-document.getElementById('chat-send-btn').addEventListener('click', sendChat);
-document.getElementById('chat-input').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') sendChat();
-});
-function sendChat() {
-    const msg = document.getElementById('chat-input').value.trim();
-    if(msg) {
-        socket.emit('sendMessage', { roomId: currentRoomId, message: msg });
-        document.getElementById('chat-input').value = '';
-    }
-}
-
-document.getElementById('home-btn').addEventListener('click', () => {
-    window.location.reload();
-});
-
-// Socket Listeners
+// --- SOCKET EVENTS ---
 socket.on('connect', () => { myId = socket.id; });
-
-socket.on('error', (msg) => alert(msg));
+socket.on('error', (msg) => showToast(msg, 'error'));
 
 socket.on('roomJoined', ({ roomId, isHost }) => {
     currentRoomId = roomId;
-    switchView('setup');
-    document.getElementById('setup-room-id').innerText = roomId;
-    
-    // Tạo link phòng
-    const lanUrl = window.location.origin + "/?room=" + roomId;
+    showView('setup');
+    $.setupRoomId.innerText = roomId;
+    window.history.pushState({roomId}, '', "?room=" + roomId);
     
     if (isHost) {
-        document.getElementById('setup-status').innerHTML = `
-            Đã tạo phòng! Gửi link này cho bạn bè:<br>
-            <input type="text" value="${lanUrl}" readonly id="copy-link" 
-                   style="width:80%; font-size:12px; margin-top:10px;">
-            <button onclick="copyRoomLink()" style="width:auto; padding:5px 10px;">Copy Link</button>
-        `;
+        $.setupStatus.innerHTML = `Đã tạo phòng! Link chia sẻ:<br>
+            <input type="text" value="${window.location.origin}${window.location.pathname}?room=${roomId}" readonly id="copy-link" style="width:80%; font-size:12px; margin-top:10px;">
+            <button onclick="copyRoomLink()" style="width:auto; padding:5px 10px;">Copy Link</button>`;
     } else {
-        document.getElementById('setup-status').innerText = "Đang chờ chủ phòng bắt đầu trò chơi...";
+        $.setupStatus.innerText = "Đang chờ chủ phòng bắt đầu...";
     }
 });
 
 socket.on('updateRoomState', (room) => {
-    // Cập nhật số chữ số giới hạn từ server
     roomDigits = room.digits;
-    
-    // Cập nhật UI gợi ý cho người dùng
-    document.getElementById('digit-hint').innerText = `Yêu cầu: Nhập đúng ${roomDigits} chữ số`;
-    document.getElementById('secret-input').placeholder = `Ví dụ: ${"1".repeat(roomDigits)}`;
-    document.getElementById('secret-input').maxLength = roomDigits;
-    
-    document.getElementById('guess-digit-hint').innerText = `Yêu cầu: Nhập đúng ${roomDigits} chữ số`;
-    document.getElementById('final-guess-input').maxLength = roomDigits;
+    $.digitHint.innerText = $.guessDigitHint.innerText = `Yêu cầu: Nhập ${roomDigits} số`;
+    $.secretInput.placeholder = `Ví dụ: ${"1".repeat(roomDigits)}`;
+    $.secretInput.maxLength = $.finalGuessInput.maxLength = roomDigits;
 
-    if (room.state === 'setup') {
+    if (['setup', 'waiting'].includes(room.state)) {
+        showView('setup');
         const me = room.players.find(p => p.id === myId);
         if (room.players.length === 2) {
-            if (me && me.ready) {
-                document.getElementById('setup-status').innerText = "Đang chờ đối thủ xác nhận...";
-                document.getElementById('secret-form').classList.add('hidden');
-            } else {
-                document.getElementById('setup-status').innerText = "Đối thủ đã tham gia! Hãy nhập số bí mật của bạn.";
-                document.getElementById('secret-form').classList.remove('hidden');
-            }
+            $.setupStatus.innerText = me?.ready ? "Đang chờ đối thủ xác nhận..." : "Đối thủ đã vào! Nhập số bí mật của bạn.";
+            $.secretForm.classList.toggle('hidden', !!me?.ready);
         }
     } else if (room.state === 'playing') {
-        switchView('game');
-        document.getElementById('game-room-id').innerText = room.id;
-        document.getElementById('game-digits').innerText = room.digits; // Hiển thị số chữ số
-        document.getElementById('my-secret-number').innerText = mySecretValue; // Hiển thị số của mình
+        showView('game');
+        $.gameRoomId.innerText = room.id;
+        $.gameDigits.innerText = room.digits;
+        $.mySecretNumber.innerText = mySecretValue;
+        $.opponentName.innerText = room.players.find(p => p.id !== myId)?.name || "Đối thủ";
         
-        const opponent = room.players.find(p => p.id !== myId);
-        document.getElementById('opponent-name').innerText = opponent ? opponent.name : "Đối thủ";
+        // Render History
+        $.timeline.innerHTML = room.history.map(item => `<p><span class="${item.type}">${item.type === 'system' ? '' : item.author + ': '}</span>${item.text}</p>`).join('');
+        $.timeline.scrollTop = $.timeline.scrollHeight;
+
+        // UI Action States
+        $.askingUi.classList.toggle('hidden', !(room.turn === myId && room.actionState === 'asking'));
+        $.answeringUi.classList.toggle('hidden', !(room.turn !== myId && room.actionState === 'answering'));
+        $.waitingUi.classList.toggle('hidden', !((room.turn === myId && room.actionState !== 'asking') || (room.turn !== myId && room.actionState !== 'answering')));
+        $.guessBtn.disabled = room.turn !== myId || room.actionState !== 'asking';
         
-        renderHistory(room.history);
-        updateActionUI(room);
+        if (!$.waitingUi.classList.contains('hidden')) {
+            $.waitingUi.innerHTML = room.turn === myId ? "<p>Đang chờ trả lời...</p>" : "<p>Đang chờ đối thủ hỏi...</p>";
+        }
     }
 });
 
-socket.on('guessResult', ({ success }) => {
-    if (!success) alert("Đoán sai rồi! Bạn bị mất lượt.");
+socket.on('playerLeft', (msg) => {
+    showToast(msg, 'info');
+    $.secretForm.classList.add('hidden');
+    $.setupStatus.innerHTML = msg;
+    mySecretValue = $.secretInput.value = "";
 });
 
+socket.on('guessResult', ({ success }) => { if (!success) showToast("Đoán sai rồi! Bạn mất lượt.", "error"); });
+
 socket.on('gameOver', ({ room }) => {
-    const amIWinner = room.winner === myId;
-    document.getElementById('winner-text').innerText = amIWinner ? "Bạn Đã Thắng! 🎉" : "Bạn Đã Thua. 💀";
-    
-    // Tiết lộ số bí mật
-    let revealHtml = `<h3>Số Bí Mật Được Tiết Lộ</h3>`;
-    room.players.forEach(p => {
-        revealHtml += `<p><strong>${p.name}:</strong> ${p.secretRaw || 'Chưa thiết lập'}</p>`;
-    });
-    document.getElementById('reveal-area').innerHTML = revealHtml;
-    
-    document.getElementById('game-over-modal').classList.remove('hidden');
+    $.winnerText.innerText = room.winner === myId ? "Bạn Đã Thắng! 🎉" : "Bạn Đã Thua. 💀";
+    $.revealArea.innerHTML = `<h3>Số Bí Mật</h3>` + room.players.map(p => `<p><strong>${p.name}:</strong> ${p.secretRaw || 'Chưa thiết lập'}</p>`).join('');
+    $.gameOverModal.showModal();
 });
 
 socket.on('receiveMessage', ({ author, text }) => {
-    const chatFeed = document.getElementById('chat-feed');
-    chatFeed.innerHTML += `<p><strong>${author}:</strong> ${text}</p>`;
-    chatFeed.scrollTop = chatFeed.scrollHeight;
+    $.chatFeed.innerHTML += `<p><strong>${author}:</strong> ${text}</p>`;
+    $.chatFeed.scrollTop = $.chatFeed.scrollHeight;
 });
-
-// Helper UI Functions
-function switchView(viewName) {
-    Object.values(views).forEach(v => v.classList.add('hidden'));
-    views[viewName].classList.remove('hidden');
-}
-
-function renderHistory(history) {
-    const feed = document.getElementById('timeline');
-    feed.innerHTML = history.map(item => {
-        let spanClass = item.type; // system, question, answer, guess
-        return `<p><span class="${spanClass}">${item.type === 'system' ? '' : item.author + ': '}</span>${item.text}</p>`;
-    }).join('');
-    feed.scrollTop = feed.scrollHeight;
-}
-
-function updateActionUI(room) {
-    const askingUI = document.getElementById('asking-ui');
-    const answeringUI = document.getElementById('answering-ui');
-    const waitingUI = document.getElementById('waiting-ui');
-    const guessBtn = document.getElementById('guess-btn');
-
-    askingUI.classList.add('hidden');
-    answeringUI.classList.add('hidden');
-    waitingUI.classList.add('hidden');
-    guessBtn.disabled = true;
-
-    if (room.turn === myId) {
-        if (room.actionState === 'asking') {
-            askingUI.classList.remove('hidden');
-            guessBtn.disabled = false;
-        } else {
-            waitingUI.classList.remove('hidden');
-            waitingUI.innerHTML = "<p>Đang chờ đối thủ trả lời...</p>";
-        }
-    } else {
-        if (room.actionState === 'answering') {
-            answeringUI.classList.remove('hidden');
-        } else {
-            waitingUI.classList.remove('hidden');
-            waitingUI.innerHTML = "<p>Đang chờ đối thủ hỏi...</p>";
-        }
-    }
-}
-
-function copyRoomLink() {
-    const copyText = document.getElementById("copy-link");
-    copyText.select();
-    document.execCommand("copy");
-    alert("Đã copy link phòng!");
-}

@@ -1,6 +1,3 @@
-/* =========================================================
-   NEO-BRUTALIST / RETRO-MODERN THEME
-   ========================================================= */
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap');
 
 * { 
@@ -11,7 +8,6 @@
 }
 
 body { 
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
     background-color: #e4e0d7; 
     background-image: radial-gradient(#a3a098 1px, transparent 0); 
     background-size: 20px 20px;
@@ -19,13 +15,11 @@ body {
     display: flex; 
     justify-content: center; 
     align-items: center; 
-    min-height: 100dvh; /* Đổi sang dvh cho mobile */
-    overflow-x: hidden; /* Chống tràn ngang do các thẻ bị xoay */
+    min-height: 100dvh; 
+    overflow-x: hidden; 
 }
 
-input, select, .history-feed .system, header strong { 
-    font-family: 'Space Mono', monospace; 
-}
+input, select, .history-feed .system, header strong { font-family: 'Space Mono', monospace; }
 
 .hidden { display: none !important; }
 
@@ -38,8 +32,8 @@ input, select, .history-feed .system, header strong {
     justify-content: center;
 }
 
-/* Base Brutalist Container */
-.card, .timeline-panel, .chat-panel, header, .action-box, .modal-content { 
+/* Base Components & Nesting */
+.card, .timeline-panel, .chat-panel, header, .action-box { 
     background: #ffffff; 
     border: 3px solid #000; 
     border-radius: 4px; 
@@ -54,18 +48,10 @@ input, select, .history-feed .system, header strong {
     width: 100%;
 }
 
-/* =========================================================
-   TYPOGRAPHY & DECORATION
-   ========================================================= */
-h1, h2, h3 {
-    text-transform: uppercase;
-    font-weight: 900;
-    letter-spacing: -1px;
-    margin-bottom: 15px;
-}
+h1, h2, h3 { text-transform: uppercase; font-weight: 900; letter-spacing: -1px; margin-bottom: 15px; }
 
 h1 {
-    font-size: clamp(2rem, 5vw, 3rem); /* Tự động thu nhỏ text trên mobile */
+    font-size: clamp(2rem, 5vw, 3rem); 
     text-align: center;
     color: #fff;
     text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
@@ -84,338 +70,116 @@ h1 {
     transform: rotate(-2deg); 
 }
 
-/* =========================================================
-   FORM ELEMENTS
-   ========================================================= */
+/* Form Elements via Nesting */
 input, select { 
-    width: 100%; 
-    padding: 12px; 
-    margin: 10px 0; 
-    border: 3px solid #000; 
-    border-radius: 0px; 
-    font-family: 'Courier New', Courier, monospace; 
-    font-size: 1.1rem;
-    font-weight: bold;
-    background: #f4f4f0; 
-    box-shadow: inset 3px 3px 0px rgba(0,0,0,0.1);
-    transition: all 0.2s ease;
-    outline: none;
+    width: 100%; padding: 12px; margin: 10px 0; 
+    border: 3px solid #000; border-radius: 0px; 
+    font-family: 'Courier New', Courier, monospace; font-size: 1.1rem; font-weight: bold;
+    background: #f4f4f0; box-shadow: inset 3px 3px 0px rgba(0,0,0,0.1);
+    transition: all 0.2s ease; outline: none;
+    
+    &:focus { background: #fff; box-shadow: 4px 4px 0px #000; transform: translate(-2px, -2px); }
 }
 
-input:focus, select:focus {
-    background: #fff;
-    box-shadow: 4px 4px 0px #000;
-    transform: translate(-2px, -2px);
-}
-
-/* =========================================================
-   BUTTONS
-   ========================================================= */
 button { 
-    width: 100%; 
-    padding: 12px; 
-    background: #ffde00; 
-    color: #000; 
-    border: 3px solid #000; 
-    border-radius: 0px; 
-    cursor: pointer; 
-    font-weight: 900; 
-    font-size: 1.1rem;
-    text-transform: uppercase;
-    margin: 8px 0; 
-    box-shadow: 4px 4px 0px #000;
-    transition: all 0.1s ease;
+    width: 100%; padding: 12px; margin: 8px 0; 
+    background: #ffde00; color: #000; 
+    border: 3px solid #000; border-radius: 0px; 
+    cursor: pointer; font-weight: 900; font-size: 1.1rem; text-transform: uppercase;
+    box-shadow: 4px 4px 0px #000; transition: all 0.1s ease;
+    
+    &:hover { transform: translate(2px, 2px); box-shadow: 2px 2px 0px #000; background: #e6c800; }
+    &:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px #000; }
+    &.danger { background: #ff5454; color: #fff; text-shadow: 1px 1px 0 #000; &:hover { background: #e04343; } }
 }
 
-button:hover { 
-    transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0px #000;
-    background: #e6c800;
-}
+#join-btn { background: #00e5ff; &:hover { background: #00c4db; } }
+.answer-btn[data-val="ĐÚNG"] { background: #50fa7b; color: #000; }
+.answer-btn[data-val="SAI"] { background: #ff5555; color: white; text-shadow: 1px 1px 0 #000; }
 
-button:active {
-    transform: translate(4px, 4px);
-    box-shadow: 0px 0px 0px #000;
-}
-
-#join-btn { background: #00e5ff; }
-#join-btn:hover { background: #00c4db; }
-
-button.danger { background: #ff5454; color: #fff; text-shadow: 1px 1px 0 #000;}
-button.danger:hover { background: #e04343; }
-
-.answer-btn[data-val="CÓ"] { background: #50fa7b; }
-.answer-btn[data-val="KHÔNG"] { background: #ff5555; color: white;}
-
-/* =========================================================
-   LOBBY SPECIFIC
-   ========================================================= */
 .settings-group { 
-    text-align: left; 
-    margin: 20px 0; 
-    padding: 15px;
-    border: 3px dashed #000;
-    background: #fdfdfd;
-}
-.settings-group label { 
-    font-weight: 900; 
-    font-size: 0.9em; 
-    text-transform: uppercase;
+    text-align: left; margin: 20px 0; padding: 15px; border: 3px dashed #000; background: #fdfdfd;
+    & label { font-weight: 900; font-size: 0.9em; text-transform: uppercase; }
 }
 
-.lobby-actions .divider { 
-    margin: 20px 0; 
-    color: #000; 
-    font-size: 1.2em; 
-    font-weight: 900;
-}
+.lobby-actions .divider { margin: 20px 0; color: #000; font-size: 1.2em; font-weight: 900; }
 
-/* =========================================================
-   GAME GRID LAYOUT
-   ========================================================= */
-#game-view { 
-    display: flex; 
-    flex-direction: column; 
-    min-height: 95dvh; 
-    padding: 10px;
-}
+#game-view { display: flex; flex-direction: column; min-height: 95dvh; padding: 10px; }
 
 header { 
-    display: flex; 
-    flex-wrap: wrap; /* Cho phép rớt dòng trên mobile */
-    justify-content: space-between; 
-    align-items: center; 
-    gap: 15px;
-    padding: 15px; 
-    margin-bottom: 20px; 
-    font-weight: bold;
-    font-size: 1em;
+    display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; 
+    gap: 15px; padding: 15px; margin-bottom: 20px; font-weight: bold; font-size: 1em;
+    
+    & strong { background: #000; color: #fff; padding: 2px 6px; font-family: monospace; white-space: nowrap; }
+    & .controls { display: flex; gap: 10px; justify-content: center; flex: 1 1 auto; & button { width: auto; margin: 0; padding: 8px 15px; font-size: 0.9rem; } }
 }
 
-.info {
-    flex: 1 1 100%;
-    text-align: center;
-}
-
-@media (min-width: 769px) {
-    .info { flex: 1; text-align: left; }
-}
-
-header strong {
-    background: #000;
-    color: #fff;
-    padding: 2px 6px;
-    font-family: monospace;
-    white-space: nowrap;
-}
+.info { flex: 1 1 100%; text-align: center; }
+@media (min-width: 769px) { .info { flex: 1; text-align: left; } }
 
 .my-secret-display {
-    background: #ff90e8; 
-    border: 3px solid #000;
-    padding: 5px 15px;
-    font-weight: 900;
-    box-shadow: 4px 4px 0px #000;
-    transform: rotate(1deg);
-    text-align: center;
-    margin: 0 auto;
+    background: #ff90e8; border: 3px solid #000; padding: 5px 15px; font-weight: 900;
+    box-shadow: 4px 4px 0px #000; transform: rotate(1deg); text-align: center; margin: 0 auto;
+    
+    & strong { background: #000; color: #50fa7b; padding: 2px 8px; margin-left: 5px; letter-spacing: 2px; }
 }
 
-.my-secret-display strong {
-    background: #000;
-    color: #50fa7b; 
-    padding: 2px 8px;
-    margin-left: 5px;
-    letter-spacing: 2px;
-}
+.game-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; flex: 1; min-height: 0; }
 
-header .controls { 
-    display: flex; 
-    gap: 10px; 
-    justify-content: center;
-    flex: 1 1 auto;
-}
-header .controls button { 
-    width: auto; 
-    margin: 0; 
-    padding: 8px 15px; 
-    font-size: 0.9rem;
-}
+.timeline-panel, .chat-panel { display: flex; flex-direction: column; padding: 15px; min-height: 0; max-height: 65vh; }
 
-.game-grid { 
-    display: grid; 
-    grid-template-columns: 2fr 1fr; 
-    gap: 20px; 
-    flex: 1; 
-}
-
-.timeline-panel, .chat-panel { 
-    display: flex; 
-    flex-direction: column; 
-    padding: 15px; 
-}
-
-/* =========================================================
-   FEEDS (History & Chat)
-   ========================================================= */
+/* CSS Nesting Cho Feed */
 .history-feed { 
-    flex: 1; 
-    overflow-y: auto; 
-    background: #fff; 
-    border: 3px solid #000; 
-    padding: 15px; 
-    margin-bottom: 15px; 
-    box-shadow: inset 4px 4px 0px rgba(0,0,0,0.05);
-    min-height: 200px;
+    flex: 1; overflow-y: auto; background: #fff; border: 3px solid #000; 
+    padding: 15px; margin-bottom: 15px; box-shadow: inset 4px 4px 0px rgba(0,0,0,0.05); min-height: 0; 
+    
+    & p { margin-bottom: 12px; line-height: 1.5; font-size: 0.95em; font-weight: 600; border-bottom: 2px dotted #aaa; padding-bottom: 8px; word-break: break-word; }
+    & .system { color: #fff; background: #000; font-style: normal; font-size: 0.8em; padding: 2px 6px; text-transform: uppercase; margin-right: 5px; display: inline-block; margin-bottom: 4px; }
+    & .question { color: #000; background: #bd93f9; padding: 2px 6px; border: 2px solid #000; font-weight: 900; }
+    & .answer { color: #000; background: #50fa7b; padding: 2px 6px; border: 2px solid #000; font-weight: 900; }
+    
+    &::-webkit-scrollbar { width: 10px; }
+    &::-webkit-scrollbar-track { background: #f4f4f0; border-left: 3px solid #000; }
+    &::-webkit-scrollbar-thumb { background: #ff90e8; border: 3px solid #000; border-right: none; border-top: none; border-bottom: none; }
+    &::-webkit-scrollbar-thumb:hover { background: #bd93f9; }
 }
 
-.history-feed p { 
-    margin-bottom: 12px; 
-    line-height: 1.5; 
-    font-size: 0.95em; 
-    font-weight: 600;
-    border-bottom: 2px dotted #aaa;
-    padding-bottom: 8px;
-    word-break: break-word;
-}
+.action-box { padding: 15px; background: #e4e0d7; text-align: center; }
 
-/* Feed Tags */
-.history-feed .system { 
-    color: #fff; 
-    background: #000;
-    font-style: normal; 
-    font-size: 0.8em;
-    padding: 2px 6px;
-    text-transform: uppercase;
-    margin-right: 5px;
-    display: inline-block;
-    margin-bottom: 4px;
-}
-.history-feed .question { 
-    color: #000; 
-    background: #bd93f9; 
-    padding: 2px 6px; 
-    border: 2px solid #000;
-    font-weight: 900; 
-}
-.history-feed .answer { 
-    color: #000; 
-    background: #50fa7b; 
-    padding: 2px 6px; 
-    border: 2px solid #000;
-    font-weight: 900; 
-}
-
-/* =========================================================
-   TURN ACTIONS & CHAT INPUTS
-   ========================================================= */
-.action-box { 
-    padding: 15px; 
-    background: #e4e0d7; 
-    text-align: center; 
-}
-
-/* Layout Flex thay cho hàm calc() dễ lỗi */
 #asking-ui, .chat-input-area { 
-    display: flex; 
-    gap: 10px; 
-    align-items: center;
-}
-#asking-ui input, .chat-input-area input { 
-    flex: 1; 
-    margin: 0; 
-}
-#asking-ui button, .chat-input-area button { 
-    width: auto; 
-    margin: 0; 
-    padding: 12px 20px;
+    display: flex; gap: 10px; align-items: center;
+    & input { flex: 1; margin: 0; }
+    & button { width: auto; margin: 0; padding: 12px 20px; }
 }
 #asking-ui button { background: #bd93f9; }
+.answer-btn { width: auto !important; padding: 10px 20px; display: inline-block; margin: 10px 5px 0 !important; }
 
-.answer-btn { 
-    width: auto !important; 
-    padding: 10px 20px;
-    display: inline-block;
-    margin: 10px 5px 0 !important; 
+/* --- DIALOG MODALS --- */
+dialog {
+    margin: auto; transform: rotate(1deg); 
+    /* Thuộc tính card mặc định đã bọc viền và bóng */
+    &::backdrop { background: rgba(0,0,0,0.7); backdrop-filter: blur(5px); }
 }
 
-/* =========================================================
-   MODALS
-   ========================================================= */
-.modal { 
-    position: fixed; 
-    top: 0; 
-    left: 0; 
-    width: 100%; 
-    height: 100%; 
-    background: rgba(0,0,0,0.7); 
-    backdrop-filter: blur(5px);
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    z-index: 1000; 
-    padding: 20px;
-}
-
-.modal-content { 
-    width: 100%;
-    max-width: 400px; 
-    max-height: 90vh;
-    overflow-y: auto;
-    transform: rotate(1deg); 
-}
-
-/* =========================================================
-   MOBILE RESPONSIVE (Màn hình < 768px)
-   ========================================================= */
 @media (max-width: 768px) {
-    .game-grid { 
-        grid-template-columns: 1fr; 
-        gap: 15px;
-    }
-    
-    header {
-        flex-direction: column;
-        text-align: center;
-        padding: 10px;
-    }
-
-    .my-secret-display {
-        transform: rotate(0deg); /* Tắt xoay trên mobile để gọn hơn */
-        width: 100%;
-    }
-
-    header .controls {
-        width: 100%;
-    }
-    header .controls button {
-        flex: 1; /* Nút kéo giãn đều nhau */
-    }
-
-    .card {
-        padding: 20px 15px;
-    }
-
-    /* Giới hạn chiều cao chat trên mobile để nhường chỗ cho Timeline */
-    .chat-panel .history-feed {
-        max-height: 150px; 
-    }
-    
-    .timeline-panel .history-feed {
-        min-height: 300px;
-        max-height: 40vh;
-    }
-
-    .action-box {
-        padding: 10px;
-    }
-
-    /* Đưa nút Hỏi / Chat xuống dòng nếu màn hình quá hẹp */
-    @media (max-width: 400px) {
-        #asking-ui, .chat-input-area {
-            flex-direction: column;
-        }
-        #asking-ui button, .chat-input-area button {
-            width: 100%;
-        }
-    }
+    .game-grid { grid-template-columns: 1fr; gap: 15px; }
+    header { flex-direction: column; text-align: center; padding: 10px; & .controls { width: 100%; & button { flex: 1; } } }
+    .my-secret-display { transform: rotate(0deg); width: 100%; }
+    .card { padding: 20px 15px; }
+    .chat-panel .history-feed { max-height: 150px; min-height: 150px; }
+    .timeline-panel .history-feed { min-height: 300px; max-height: 40vh; }
+    .timeline-panel, .chat-panel { max-height: none; }
+    .action-box { padding: 10px; }
+    @media (max-width: 400px) { #asking-ui, .chat-input-area { flex-direction: column; & button { width: 100%; } } }
 }
+
+.toast-container { position: fixed; top: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 9999; pointer-events: none; }
+.toast {
+    background: #fff; border: 3px solid #000; padding: 15px 20px; font-weight: 900; font-size: 0.9rem; 
+    box-shadow: 4px 4px 0px #000; animation: slideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; 
+    transition: opacity 0.3s ease; max-width: 300px;
+    &.error { background: #ff5454; color: #fff; text-shadow: 1px 1px 0 #000; }
+    &.info { background: #ffde00; color: #000; }
+}
+
+@keyframes slideIn { from { transform: translateX(120%); } to { transform: translateX(0); } }

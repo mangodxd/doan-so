@@ -8,11 +8,12 @@
 </head>
 <body>
 
-    <div id="lobby-view" class="view-container">
+    <div id="toast-container" class="toast-container"></div>
+
+    <div class="view view-container" data-name="lobby">
         <h1>Đoán Số</h1>
         <div class="card">
             <input type="text" id="username" placeholder="Nhập tên của bạn" maxlength="15">
-            
             <div class="settings-group">
                 <label for="digit-select">Số lượng chữ số:</label>
                 <select id="digit-select">
@@ -22,7 +23,6 @@
                     <option value="6">6 chữ số</option>
                 </select>
             </div>
-
             <div class="lobby-actions">
                 <button id="create-btn">Tạo Phòng</button>
                 <div class="divider">HOẶC</div>
@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <div id="setup-view" class="view-container hidden">
+    <div class="view view-container hidden" data-name="setup">
         <div class="card">
             <p>Mã Phòng: <strong id="setup-room-id"></strong></p>
             <p id="setup-status">Đang chờ đối thủ...</p>
@@ -44,11 +44,11 @@
         </div>
     </div>
 
-    <div id="game-view" class="view-container hidden">
+    <div class="view view-container hidden" data-name="game">
         <header>
             <div class="info">
                 Phòng: <strong id="game-room-id"></strong> | 
-                Số chữ số: <strong id="game-digits"></strong> | 
+                Chữ số: <strong id="game-digits"></strong> | 
                 Đối thủ: <strong id="opponent-name"></strong>
             </div>
             <div class="my-secret-display">
@@ -63,23 +63,19 @@
         <main class="game-grid">
             <section class="timeline-panel">
                 <div id="timeline" class="history-feed"></div>
-                
                 <div id="action-area" class="action-box">
                     <div id="asking-ui" class="hidden">
-                        <input type="text" id="question-input" placeholder="Hỏi một câu hỏi Có/Không...">
+                        <input type="text" id="question-input" placeholder="Hỏi một câu hỏi Đúng/Sai...">
                         <button id="ask-btn">Hỏi</button>
                     </div>
                     <div id="answering-ui" class="hidden">
-                        <p>Đối thủ đã hỏi. Hãy trả lời trung thực:</p>
-                        <button class="answer-btn" data-val="CÓ">CÓ</button>
-                        <button class="answer-btn" data-val="KHÔNG">KHÔNG</button>
+                        <p>Đối thủ đã hỏi. Hãy trả lời:</p>
+                        <button class="answer-btn" data-val="ĐÚNG">ĐÚNG</button>
+                        <button class="answer-btn" data-val="SAI">SAI</button>
                     </div>
-                    <div id="waiting-ui">
-                        <p>Đang chờ đối thủ...</p>
-                    </div>
+                    <div id="waiting-ui"><p>Đang chờ đối thủ...</p></div>
                 </div>
             </section>
-
             <aside class="chat-panel">
                 <h3>Chat</h3>
                 <div id="chat-feed" class="history-feed"></div>
@@ -91,24 +87,20 @@
         </main>
     </div>
 
-    <div id="guess-modal" class="modal hidden">
-        <div class="modal-content card">
-            <h2>Đưa Ra Dự Đoán</h2>
-            <p>Note: Nếu đoán sai bạn sẽ bị mất lượt!</p>
-            <p id="guess-digit-hint" class="hint-text"></p>
-            <input type="text" id="final-guess-input" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-            <button id="submit-guess-btn">Chốt</button>
-            <button id="cancel-guess-btn">Hủy</button>
-        </div>
-    </div>
+    <dialog id="guess-modal" class="card">
+        <h2>Đưa Ra Dự Đoán</h2>
+        <p>Note: Nếu đoán sai bạn sẽ bị mất lượt!</p>
+        <p id="guess-digit-hint" class="hint-text"></p>
+        <input type="text" id="final-guess-input" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+        <button id="submit-guess-btn">Chốt</button>
+        <button id="cancel-guess-btn">Hủy</button>
+    </dialog>
 
-    <div id="game-over-modal" class="modal hidden">
-        <div class="modal-content card">
-            <h2 id="winner-text"></h2>
-            <div id="reveal-area"></div>
-            <button id="home-btn">Về Sảnh Chờ</button>
-        </div>
-    </div>
+    <dialog id="game-over-modal" class="card">
+        <h2 id="winner-text"></h2>
+        <div id="reveal-area"></div>
+        <button id="home-btn">Về Sảnh Chờ</button>
+    </dialog>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="script.js"></script>
