@@ -46,7 +46,14 @@
 
     <div id="game-view" class="view-container hidden">
         <header>
-            <div class="info">Phòng: <strong id="game-room-id"></strong> | Đối thủ: <strong id="opponent-name"></strong></div>
+            <div class="info">
+                Phòng: <strong id="game-room-id"></strong> | 
+                Số chữ số: <strong id="game-digits"></strong> | 
+                Đối thủ: <strong id="opponent-name"></strong>
+            </div>
+            <div class="my-secret-display">
+                Số của bạn: <strong id="my-secret-number">----</strong>
+            </div>
             <div class="controls">
                 <button id="guess-btn">Đoán Số</button>
                 <button id="surrender-btn" class="danger">Đầu Hàng</button>

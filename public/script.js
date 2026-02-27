@@ -10,7 +10,7 @@ window.addEventListener('load', () => {
         if (name === null) return; // Nếu nhấn Cancel thì thôi
         
         if (name.trim() === "") {
-            name = "NguoiChoi_" + Math.floor(Math.random() * 1000);
+            name = "Player_" + Math.floor(Math.random() * 1000);
         }
         
         myName = name;
@@ -31,16 +31,17 @@ let myId = null;
 let currentRoomId = null;
 let myName = "";
 let roomDigits = 5; // Lưu trữ số lượng chữ số của phòng hiện tại
+let mySecretValue = ""; // Lưu số bí mật để hiển thị lại
 
 // Lobby Actions
 document.getElementById('create-btn').addEventListener('click', () => {
-    myName = document.getElementById('username').value.trim() || "NguoiChoi1";
+    myName = document.getElementById('username').value.trim() || "Player1";
     const digits = document.getElementById('digit-select').value;
     socket.emit('createRoom', { username: myName, digits: parseInt(digits) });
 });
 
 document.getElementById('join-btn').addEventListener('click', () => {
-    myName = document.getElementById('username').value.trim() || "NguoiChoi2";
+    myName = document.getElementById('username').value.trim() || "Player2";
     const roomId = document.getElementById('room-input').value.trim();
     if(roomId) socket.emit('joinRoom', { roomId, username: myName });
 });
@@ -54,6 +55,7 @@ document.getElementById('confirm-secret-btn').addEventListener('click', () => {
         return alert(`Vui lòng nhập chính xác ${roomDigits} chữ số.`);
     }
     
+    mySecretValue = secret; // <-- LƯU SỐ VÀO ĐÂY
     socket.emit('submitSecret', { roomId: currentRoomId, secret });
     document.getElementById('secret-form').classList.add('hidden');
     document.getElementById('setup-status').innerText = "Đang chờ đối thủ xác nhận...";
@@ -166,6 +168,9 @@ socket.on('updateRoomState', (room) => {
     } else if (room.state === 'playing') {
         switchView('game');
         document.getElementById('game-room-id').innerText = room.id;
+        document.getElementById('game-digits').innerText = room.digits; // Hiển thị số chữ số
+        document.getElementById('my-secret-number').innerText = mySecretValue; // Hiển thị số của mình
+        
         const opponent = room.players.find(p => p.id !== myId);
         document.getElementById('opponent-name').innerText = opponent ? opponent.name : "Đối thủ";
         

@@ -35,7 +35,7 @@ function logMatch(room) {
 }
 
 io.on('connection', (socket) => {
-    console.log(`Người dùng kết nối: ${socket.id}`);
+    console.log(`User connected: ${socket.id}`);
 
     // CẬP NHẬT: Nhận thêm thông số digits
     socket.on('createRoom', ({ username, digits }) => {
@@ -168,7 +168,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
-        console.log(`Người dùng ngắt kết nối: ${socket.id}`);
+        console.log(`User disconnected: ${socket.id}`);
         for (const roomId in rooms) {
             const room = rooms[roomId];
             const player = room.players.find(p => p.id === socket.id);
@@ -187,16 +187,5 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 8000;
 const os = require('os');
 server.listen(PORT, '0.0.0.0', () => {
-    console.log(`--- SERVER ĐANG CHẠY TẠI CÁC ĐỊA CHỈ ---`);
-    console.log(`Local: http://localhost:${PORT}`);
-    
-    const networkInterfaces = os.networkInterfaces();
-    for (const interfaceName in networkInterfaces) {
-        for (const iface of networkInterfaces[interfaceName]) {
-            if (iface.family === 'IPv4' && !iface.internal) {
-                console.log(`LAN:   http://${iface.address}:${PORT}`);
-            }
-        }
-    }
-    console.log(`----------------------------------`);
+    console.log("We are good to go!")
 });

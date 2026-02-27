@@ -2,6 +2,7 @@
    NEO-BRUTALIST / RETRO-MODERN THEME
    ========================================================= */
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap');
+
 * { 
     box-sizing: border-box; 
     margin: 0; 
@@ -10,16 +11,16 @@
 }
 
 body { 
-    /* Modern stack with a raw feel */
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
-    background-color: #e4e0d7; /* Retro beige/grey */
-    background-image: radial-gradient(#a3a098 1px, transparent 0); /* Subtle dot matrix background */
+    background-color: #e4e0d7; 
+    background-image: radial-gradient(#a3a098 1px, transparent 0); 
     background-size: 20px 20px;
     color: #000; 
     display: flex; 
     justify-content: center; 
     align-items: center; 
-    min-height: 100vh; 
+    min-height: 100dvh; /* Đổi sang dvh cho mobile */
+    overflow-x: hidden; /* Chống tràn ngang do các thẻ bị xoay */
 }
 
 input, select, .history-feed .system, header strong { 
@@ -32,14 +33,17 @@ input, select, .history-feed .system, header strong {
     width: 100%; 
     max-width: 1000px; 
     padding: 20px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 /* Base Brutalist Container */
 .card, .timeline-panel, .chat-panel, header, .action-box, .modal-content { 
     background: #ffffff; 
     border: 3px solid #000; 
-    border-radius: 4px; /* Tiny radius for a modern touch */
-    box-shadow: 8px 8px 0px #000; /* Hard offset shadow */
+    border-radius: 4px; 
+    box-shadow: 8px 8px 0px #000; 
 }
 
 .card { 
@@ -47,6 +51,7 @@ input, select, .history-feed .system, header strong {
     text-align: center; 
     max-width: 420px; 
     margin: 0 auto; 
+    width: 100%;
 }
 
 /* =========================================================
@@ -60,7 +65,7 @@ h1, h2, h3 {
 }
 
 h1 {
-    font-size: 3rem;
+    font-size: clamp(2rem, 5vw, 3rem); /* Tự động thu nhỏ text trên mobile */
     text-align: center;
     color: #fff;
     text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
@@ -70,17 +75,17 @@ h1 {
 .hint-text { 
     font-size: 0.85em; 
     color: #000; 
-    background-color: #ff90e8; /* Vivid pink */
+    background-color: #ff90e8; 
     border: 2px solid #000;
     font-weight: 800; 
     padding: 4px 8px;
     margin-bottom: 15px; 
     display: inline-block;
-    transform: rotate(-2deg); /* Quirky brutalist angle */
+    transform: rotate(-2deg); 
 }
 
 /* =========================================================
-   FORM ELEMENTS (Inputs & Selects)
+   FORM ELEMENTS
    ========================================================= */
 input, select { 
     width: 100%; 
@@ -88,7 +93,7 @@ input, select {
     margin: 10px 0; 
     border: 3px solid #000; 
     border-radius: 0px; 
-    font-family: 'Courier New', Courier, monospace; /* Retro terminal vibe for inputs */
+    font-family: 'Courier New', Courier, monospace; 
     font-size: 1.1rem;
     font-weight: bold;
     background: #f4f4f0; 
@@ -109,7 +114,7 @@ input:focus, select:focus {
 button { 
     width: 100%; 
     padding: 12px; 
-    background: #ffde00; /* Cyber yellow */
+    background: #ffde00; 
     color: #000; 
     border: 3px solid #000; 
     border-radius: 0px; 
@@ -133,7 +138,6 @@ button:active {
     box-shadow: 0px 0px 0px #000;
 }
 
-/* Specific Button Colors */
 #join-btn { background: #00e5ff; }
 #join-btn:hover { background: #00c4db; }
 
@@ -169,16 +173,32 @@ button.danger:hover { background: #e04343; }
 /* =========================================================
    GAME GRID LAYOUT
    ========================================================= */
-#game-view { display: flex; flex-direction: column; height: 92vh; }
+#game-view { 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 95dvh; 
+    padding: 10px;
+}
 
 header { 
     display: flex; 
+    flex-wrap: wrap; /* Cho phép rớt dòng trên mobile */
     justify-content: space-between; 
     align-items: center; 
-    padding: 15px 25px; 
+    gap: 15px;
+    padding: 15px; 
     margin-bottom: 20px; 
     font-weight: bold;
-    font-size: 1.1em;
+    font-size: 1em;
+}
+
+.info {
+    flex: 1 1 100%;
+    text-align: center;
+}
+
+@media (min-width: 769px) {
+    .info { flex: 1; text-align: left; }
 }
 
 header strong {
@@ -186,23 +206,52 @@ header strong {
     color: #fff;
     padding: 2px 6px;
     font-family: monospace;
+    white-space: nowrap;
 }
 
-header .controls { display: flex; gap: 15px; }
-header .controls button { width: auto; margin: 0; padding: 5px 15px; }
+.my-secret-display {
+    background: #ff90e8; 
+    border: 3px solid #000;
+    padding: 5px 15px;
+    font-weight: 900;
+    box-shadow: 4px 4px 0px #000;
+    transform: rotate(1deg);
+    text-align: center;
+    margin: 0 auto;
+}
+
+.my-secret-display strong {
+    background: #000;
+    color: #50fa7b; 
+    padding: 2px 8px;
+    margin-left: 5px;
+    letter-spacing: 2px;
+}
+
+header .controls { 
+    display: flex; 
+    gap: 10px; 
+    justify-content: center;
+    flex: 1 1 auto;
+}
+header .controls button { 
+    width: auto; 
+    margin: 0; 
+    padding: 8px 15px; 
+    font-size: 0.9rem;
+}
 
 .game-grid { 
     display: grid; 
     grid-template-columns: 2fr 1fr; 
-    gap: 25px; 
+    gap: 20px; 
     flex: 1; 
-    min-height: 0; 
 }
 
 .timeline-panel, .chat-panel { 
     display: flex; 
     flex-direction: column; 
-    padding: 20px; 
+    padding: 15px; 
 }
 
 /* =========================================================
@@ -216,15 +265,17 @@ header .controls button { width: auto; margin: 0; padding: 5px 15px; }
     padding: 15px; 
     margin-bottom: 15px; 
     box-shadow: inset 4px 4px 0px rgba(0,0,0,0.05);
+    min-height: 200px;
 }
 
 .history-feed p { 
     margin-bottom: 12px; 
     line-height: 1.5; 
-    font-size: 1em; 
+    font-size: 0.95em; 
     font-weight: 600;
     border-bottom: 2px dotted #aaa;
     padding-bottom: 8px;
+    word-break: break-word;
 }
 
 /* Feed Tags */
@@ -236,6 +287,8 @@ header .controls button { width: auto; margin: 0; padding: 5px 15px; }
     padding: 2px 6px;
     text-transform: uppercase;
     margin-right: 5px;
+    display: inline-block;
+    margin-bottom: 4px;
 }
 .history-feed .question { 
     color: #000; 
@@ -256,24 +309,34 @@ header .controls button { width: auto; margin: 0; padding: 5px 15px; }
    TURN ACTIONS & CHAT INPUTS
    ========================================================= */
 .action-box { 
-    padding: 20px; 
+    padding: 15px; 
     background: #e4e0d7; 
     text-align: center; 
 }
 
-.action-box input { 
-    width: calc(100% - 100px); 
-    display: inline-block; 
-    margin-right: 10px; 
-    margin-bottom: 0;
+/* Layout Flex thay cho hàm calc() dễ lỗi */
+#asking-ui, .chat-input-area { 
+    display: flex; 
+    gap: 10px; 
+    align-items: center;
 }
-.action-box button { width: 80px; display: inline-block; margin: 0; background: #bd93f9; }
+#asking-ui input, .chat-input-area input { 
+    flex: 1; 
+    margin: 0; 
+}
+#asking-ui button, .chat-input-area button { 
+    width: auto; 
+    margin: 0; 
+    padding: 12px 20px;
+}
+#asking-ui button { background: #bd93f9; }
 
-.answer-btn { width: 120px !important; margin: 10px 10px 0 !important; }
-
-.chat-input-area { display: flex; gap: 10px; }
-.chat-input-area input { margin: 0; flex: 1; }
-.chat-input-area button { width: auto; margin: 0; padding: 0 20px; }
+.answer-btn { 
+    width: auto !important; 
+    padding: 10px 20px;
+    display: inline-block;
+    margin: 10px 5px 0 !important; 
+}
 
 /* =========================================================
    MODALS
@@ -290,17 +353,69 @@ header .controls button { width: auto; margin: 0; padding: 5px 15px; }
     justify-content: center; 
     align-items: center; 
     z-index: 1000; 
+    padding: 20px;
 }
 
 .modal-content { 
+    width: 100%;
     max-width: 400px; 
-    transform: rotate(1deg); /* Deliberate crooked look */
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: rotate(1deg); 
 }
 
-/* Mobile Responsiveness */
+/* =========================================================
+   MOBILE RESPONSIVE (Màn hình < 768px)
+   ========================================================= */
 @media (max-width: 768px) {
-    .game-grid { grid-template-columns: 1fr; }
-    #game-view { height: auto; min-height: 100vh; }
-    .action-box input { width: 100%; margin-bottom: 10px; }
-    .action-box button { width: 100%; }
+    .game-grid { 
+        grid-template-columns: 1fr; 
+        gap: 15px;
+    }
+    
+    header {
+        flex-direction: column;
+        text-align: center;
+        padding: 10px;
+    }
+
+    .my-secret-display {
+        transform: rotate(0deg); /* Tắt xoay trên mobile để gọn hơn */
+        width: 100%;
+    }
+
+    header .controls {
+        width: 100%;
+    }
+    header .controls button {
+        flex: 1; /* Nút kéo giãn đều nhau */
+    }
+
+    .card {
+        padding: 20px 15px;
+    }
+
+    /* Giới hạn chiều cao chat trên mobile để nhường chỗ cho Timeline */
+    .chat-panel .history-feed {
+        max-height: 150px; 
+    }
+    
+    .timeline-panel .history-feed {
+        min-height: 300px;
+        max-height: 40vh;
+    }
+
+    .action-box {
+        padding: 10px;
+    }
+
+    /* Đưa nút Hỏi / Chat xuống dòng nếu màn hình quá hẹp */
+    @media (max-width: 400px) {
+        #asking-ui, .chat-input-area {
+            flex-direction: column;
+        }
+        #asking-ui button, .chat-input-area button {
+            width: 100%;
+        }
+    }
 }
