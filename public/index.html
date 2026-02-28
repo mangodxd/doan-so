@@ -8,6 +8,8 @@
 </head>
 <body>
 
+<button id="rules-btn" class="floating-rules">?</button>
+
     <div id="toast-container" class="toast-container"></div>
 
     <div class="view view-container" data-name="lobby">
@@ -100,6 +102,22 @@
         <h2 id="winner-text"></h2>
         <div id="reveal-area"></div>
         <button id="home-btn">Về Sảnh Chờ</button>
+    </dialog>
+
+    <dialog id="rules-modal" class="card" style="max-width: 500px; text-align: left;">
+        <h2>Luật Chơi</h2>
+        <div style="text-align: left; line-height: 1.6; margin-bottom: 20px;">
+            <p>1. <strong>Thiết lập:</strong> Có 2 người chơi. Mỗi người chơi chọn một dãy số bí mật (3, 4, 5, 6 chữ số).</p>
+            <p>2. <strong>Mục tiêu:</strong> Đoán chính xác dãy số của đối thủ trước khi họ đoán ra số của bạn.</p>
+            <p>3. <strong>Tiến trình:</strong> Hai bên thay phiên nhau:</p>
+            <ul style="margin-left: 20px;">
+                <li><strong>Hỏi:</strong> Đưa ra câu hỏi Có/Không (Ví dụ: "Số đó có chữ số 5 không?").</li>
+                <li><strong>Trả lời:</strong> Đối thủ trả lời thành thật bằng nút ĐÚNG/SAI.</li>
+            </ul>
+            <p>4. <strong>Đoán số:</strong> Bạn có thể dùng nút <strong>Đoán Số</strong> bất cứ khi nào đến lượt. 
+               <br><span style="color: #ff5454;">⚠️ Lưu ý: Nếu đoán sai, bạn sẽ mất lượt ngay lập tức!</span></p>
+        </div>
+        <button id="close-rules-btn">Đã Hiểu</button>
     </dialog>
 
     <script src="/socket.io/socket.io.js"></script>

@@ -77,6 +77,9 @@ document.addEventListener('click', e => {
     if (id === 'guess-btn') $.guessModal.showModal(); // HTML5 Dialog API
     if (id === 'cancel-guess-btn') $.guessModal.close();
     
+    if (id === 'rules-btn') $.rulesModal.showModal();
+    if (id === 'close-rules-btn') $.rulesModal.close();
+    
     if (id === 'submit-guess-btn') {
         const guess = $.finalGuessInput.value.trim();
         if (guess.length !== roomDigits) return showToast(`Phải đủ ${roomDigits} chữ số!`, 'error');
